@@ -1,115 +1,68 @@
-class Verfahren {
-
+class PUMPE {
     constructor(){
-        this.stage = 3;            // Startstage
-        this.mode = "TRANSWARP";   // TRANSWARP / CONTINUUM / PIPELINE / BERLIN
-        this.element = "ICE";      // ICE / FEUER
-        this.last = {};            // Letztes Ergebnis
+        this.wasser = 0;
+        this.o2 = 0;
+        this.co2 = 0;
+        this.atom = 0;
     }
 
-    // Stage setzen (jede Zahl erlaubt)
-    setStage(value){
-        this.stage = value;
-        return this.stage;
+    // NATURA – Grundwerte
+    natur(x){
+        this.wasser = x * 0.33;      // Stabilität
+        this.o2     = x * 0.12;      // Energie
+        this.co2    = x * 0.08;      // Rückfluss
+        this.atom   = Math.sqrt(x);  // Strukturwechsel
+        return this.output();
     }
 
-    // Modus setzen
-    setMode(mode){
-        this.mode = mode;
-        return this.mode;
+    // OMNI – Fusion aller vier
+    omni(x){
+        this.wasser = x * 0.33;
+        this.o2     = x * 0.12;
+        this.co2    = x * 0.08;
+        this.atom   = Math.sqrt(x) * 1.5;
+        return this.output();
     }
 
-    // Element setzen
-    setElement(element){
-        this.element = element;
-        HitAllxAll.setElement(element);
-        MassHWTranswarp.setElement(element);
-        return this.element;
+    // Djinn – reaktiv
+    djinn(x){
+        this.wasser = x * 0.20;
+        this.o2     = x * 0.18;
+        this.co2    = x * 0.10;
+        this.atom   = Math.sqrt(x) * 0.9;
+        return this.output();
     }
 
-    // TRANSWARP-Verfahren
-    runTranswarp(){
-        const s = TranswarpStage.set(this.stage);
-        const next = TranswarpStage.next();
-        const mass = MassHWTranswarp.compute();
+    // Atlanter – stabil
+    atlanter(x){
+        this.wasser = x * 0.40;
+        this.o2     = x * 0.10;
+        this.co2    = x * 0.05;
+        this.atom   = Math.sqrt(x) * 0.7;
+        return this.output();
+    }
 
-        this.last = {
-            verfahren: "TRANSWARP",
-            stage: s,
-            nextStage: next,
-            mass: mass.accel,
-            impuls: mass.impuls,
-            kraft: mass.kraft,
-            energie: mass.energie
+    // Atalar – Erinnerung
+    atalar(x){
+        this.wasser = x * 0.25;
+        this.o2     = x * 0.15;
+        this.co2    = x * 0.12;
+        this.atom   = Math.sqrt(x) * 1.2;
+        return this.output();
+    }
+
+    // Ausgabe
+    output(){
+        return {
+            wasser: this.wasser,
+            o2: this.o2,
+            co2: this.co2,
+            atom: this.atom,
+            energie: this.o2 - this.co2 + this.atom,
+            stabil: this.wasser - this.co2,
+            tag: "PUMPE"
         };
-
-        return this.last;
-    }
-
-    // CONTINUUM-Verfahren
-    runContinuum(){
-        const s = TranswarpStage.set(this.stage);
-        const fold = TranswarpStage.continuum();
-        const mass = MassHWTranswarp.compute();
-
-        this.last = {
-            verfahren: "CONTINUUM",
-            stage: s,
-            continuum: fold,
-            mass: mass.accel,
-            impuls: mass.impuls,
-            kraft: mass.kraft,
-            energie: mass.energie
-        };
-
-        return this.last;
-    }
-
-    // PIPELINE-Verfahren
-    runPipeline(){
-        const result = ContinuumPipeline.run(this.stage);
-
-        this.last = {
-            verfahren: "PIPELINE",
-            stage: result.stage,
-            hit: result.hit,
-            mass: result.mass.accel,
-            impuls: result.mass.impuls,
-            kraft: result.mass.kraft,
-            energie: result.mass.energie
-        };
-
-        return this.last;
-    }
-
-    // BERLIN-Schiene
-    runBerlin(){
-        const boot = MASTERBOOT.boot();
-        const over = Overdrive.run();
-
-        this.last = {
-            verfahren: "BERLIN",
-            boot,
-            overdrive: over.overdrive,
-            accel: over.accel,
-            hit: over.hit,
-            nextStage: over.nextStage
-        };
-
-        return this.last;
-    }
-
-    // Hauptverfahren
-    run(){
-        switch(this.mode){
-            case "TRANSWARP": return this.runTranswarp();
-            case "CONTINUUM": return this.runContinuum();
-            case "PIPELINE": return this.runPipeline();
-            case "BERLIN": return this.runBerlin();
-            default:
-                return { error: "Unbekanntes Verfahren" };
-        }
     }
 }
 
-window.Verfahren = new Verfahren();
+window.PUMPE = new PUMPE();
