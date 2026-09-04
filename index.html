@@ -3,99 +3,649 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UNI‑9 · A81‑AXIS · iki1uc</title>
-
+  <title>⚡ IKI1UC · ULTRA‑KERNEL · A81‑AXIS · OMNI</title>
   <style>
-    body { background:#000; color:#0f0; font-family:Consolas; padding:20px; }
-    h1 { color:#6cf; }
-    canvas { background:#111; border:1px solid #333; margin-top:20px; display:block; }
-    .console { background:#111; border:1px solid #444; padding:10px; white-space:pre-wrap; }
-    button { background:#222; color:#0f0; border:1px solid #0f0; padding:6px 14px; margin:4px; }
-    button:hover { background:#0f0; color:#000; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: #06080c;
+      color: #d0d8e0;
+      font-family: 'Consolas', 'Segoe UI', monospace;
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      background-image: radial-gradient(ellipse at 20% 30%, #0d1a2a, #050608);
+    }
+    .wrap { max-width: 1200px; width: 100%; }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #1a2230;
+    }
+    header h1 {
+      font-size: 28px;
+      font-weight: 300;
+      letter-spacing: 3px;
+      background: linear-gradient(135deg, #6ec8ff, #ffd866, #ff7b7b, #b388ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    header .badge {
+      font-size: 13px;
+      background: #101820;
+      padding: 4px 16px;
+      border-radius: 30px;
+      border: 1px solid #2a3a4a;
+      color: #8a9aaa;
+    }
+    .badge .dot {
+      display: inline-block;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: middle;
+      animation: pulse 1.2s infinite;
+    }
+    .dot-stage { background: #6ec8ff; box-shadow: 0 0 10px #6ec8ff66; }
+    .dot-air   { background: #ffd866; box-shadow: 0 0 10px #ffd86666; }
+    .dot-aiv   { background: #ff7b7b; box-shadow: 0 0 10px #ff7b7b66; }
+    .dot-omni  { background: #b388ff; box-shadow: 0 0 20px #b388ff88; }
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 0.7; }
+      50% { transform: scale(1.3); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.7; }
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    @media (max-width: 820px) { .grid { grid-template-columns: 1fr; } }
+
+    .card {
+      background: #0e141c;
+      border: 1px solid #1a2230;
+      border-radius: 12px;
+      padding: 16px;
+      transition: border-color 0.3s;
+    }
+    .card.stage-card { border-top: 3px solid #6ec8ff; }
+    .card.air-card   { border-top: 3px solid #ffd866; }
+    .card.aiv-card   { border-top: 3px solid #ff7b7b; }
+    .card.omni-card  { border-top: 3px solid #b388ff; box-shadow: 0 0 30px #b388ff22; }
+    .card h2 {
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 1px;
+      color: #5a6a7a;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #16202a;
+      padding-bottom: 5px;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      border-bottom: 1px solid #0e1620;
+      font-size: 13px;
+    }
+    .row:last-child { border-bottom: none; }
+    .row .label { color: #5a6a7a; }
+    .row .value { font-weight: 500; }
+
+    .mode-indicator {
+      display: inline-block;
+      padding: 2px 14px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 13px;
+      background: #16202a;
+      color: #8a9aaa;
+    }
+    .mode-stage { background: #0a2a3a; color: #6ec8ff; }
+    .mode-air   { background: #2a2a0a; color: #ffd866; }
+    .mode-aiv   { background: #2a0a1a; color: #ff7b7b; }
+    .mode-omni  { background: #1a0a2a; color: #b388ff; box-shadow: 0 0 30px #b388ff44; }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    button {
+      background: #141e28;
+      color: #d0d8e0;
+      border: 1px solid #2a3a4a;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    button:hover { background: #1e2a36; border-color: #4a5a6a; }
+    button.primary { border-color: #4a7a9a; color: #6ec8ff; }
+    button.primary:hover { background: #0a2a3a; }
+    button.omni { border-color: #b388ff; color: #b388ff; }
+    button.omni:hover { background: #1a0a2a; }
+    button.danger { border-color: #ff6b6b; color: #ff6b6b; }
+
+    canvas {
+      width: 100%;
+      max-width: 420px;
+      display: block;
+      margin: 8px auto;
+      background: #0a0e14;
+      border: 1px solid #16202a;
+      border-radius: 10px;
+    }
+
+    .log {
+      height: 120px;
+      overflow-y: auto;
+      background: #080c12;
+      border: 1px solid #16202a;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 11px;
+      line-height: 1.6;
+      color: #5a6a7a;
+    }
+    .log .entry { padding: 1px 0; border-bottom: 1px solid #0e141c; }
+    .log .time { color: #2a3a4a; }
+    .log .msg { color: #b0b8c0; }
+    .log .msg.stage { color: #6ec8ff; }
+    .log .msg.air   { color: #ffd866; }
+    .log .msg.aiv   { color: #ff7b7b; }
+    .log .msg.omni  { color: #b388ff; font-weight: bold; }
+    .log .msg.error { color: #ff6b6b; }
+
+    .energy-bar {
+      background: #080c12;
+      border-radius: 8px;
+      height: 6px;
+      margin: 6px 0 4px;
+      overflow: hidden;
+      border: 1px solid #16202a;
+    }
+    .energy-bar .fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #6ec8ff, #ffd866, #ff7b7b, #b388ff);
+      transition: width 0.3s ease;
+    }
+
+    .pfad-visual {
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+      margin: 6px 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: #3a4a5a;
+    }
+    .pfad-visual .active {
+      color: #ffd866;
+      text-shadow: 0 0 16px #ffd86644;
+    }
+    .pfad-visual .sep { color: #1a2230; }
+
+    .footer {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 14px;
+      padding: 8px;
+      background: #0e141c;
+      border-radius: 10px;
+      border: 1px solid #16202a;
+      font-size: 12px;
+      color: #5a6a7a;
+    }
+    .footer .stat { display: flex; align-items: center; gap: 4px; }
+    .footer .dot-sm {
+      width: 8px; height: 8px; border-radius: 50%;
+    }
+    .footer .dot-sm.stage { background: #6ec8ff; }
+    .footer .dot-sm.air   { background: #ffd866; }
+    .footer .dot-sm.aiv   { background: #ff7b7b; }
+    .footer .dot-sm.omni  { background: #b388ff; }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #080c12; }
+    ::-webkit-scrollbar-thumb { background: #16202a; border-radius: 4px; }
   </style>
 </head>
-
 <body>
 
-<h1>UNI‑9 · A81‑AXIS · iki1uc</h1>
+<div class="wrap">
 
-<div class="console" id="engineOut">UNI‑9 Engine lädt…</div>
-<canvas id="orbitCanvas" width="500" height="500"></canvas>
+  <header>
+    <h1>⚡ ULTRA‑KERNEL · A81‑AXIS · OMNI</h1>
+    <div class="badge">
+      <span class="dot dot-stage" id="bootDot"></span>
+      <span id="bootStatus">OMNI</span>
+    </div>
+  </header>
 
-<button id="btnUni9">⚡ UNI‑9 START</button>
-<button id="btnA81">🔺 A81‑AXIS BOOST</button>
+  <div class="grid">
 
-<script type="module">
+    <div>
+      <div class="card stage-card" id="modeCard">
+        <h2>🌀 MODUS · ZAHNRAD · ENERGIE</h2>
+        <div class="row"><span class="label">Zahnrad</span><span class="value" id="zahnradDisplay">0</span></div>
+        <div class="row">
+          <span class="label">Modus</span>
+          <span class="value"><span class="mode-indicator" id="modeDisplay">stage</span></span>
+        </div>
+        <div class="row"><span class="label">Tick</span><span class="value" id="tickDisplay">0</span></div>
 
-// MODULE IMPORTS
-import { KIT } from "./kit.js";
-import { resetKernel } from "./resetKernel.js";
-import { QUANT } from "./QUANT.js";
-import { SYN } from "./SYN.js";
-import { QUO } from "./QUO.js";
-import { PYRAMIDE } from "./PYRAMIDE.js";
+        <div class="energy-bar"><div class="fill" id="energyFill"></div></div>
 
-// STATE — 8 → 9 → 81
-const STATE = {
-  achsen: 8,
-  uni9: false,
-  a81: false,
-  mode: "INIT",
-  arg: { sync:false }
+        <div class="pfad-visual" id="pfadVisual">
+          <span class="active" id="p0">3</span><span class="sep">→</span>
+          <span id="p1">9</span><span class="sep">→</span>
+          <span id="p2">81</span><span class="sep">→</span>
+          <span id="p3">243</span><span class="sep">→</span>
+          <span id="p4">81</span><span class="sep">→</span>
+          <span id="p5">9</span>
+        </div>
+
+        <div class="btn-row">
+          <button id="stepBtn" class="primary">▶ Step</button>
+          <button id="loopBtn">▶ Loop</button>
+          <button id="stopBtn">⏹ Stop</button>
+          <button id="omniBtn" class="omni">🌀 OMNI</button>
+          <button id="resetBtn" class="danger">⟲ Reset</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>📊 ENGINE · A81 · AXIS</h2>
+        <div class="row"><span class="label">A81</span><span class="value" id="a81Display">81</span></div>
+        <div class="row"><span class="label">Pfad‑Index</span><span class="value" id="pathIndexDisplay">2</span></div>
+        <div class="row"><span class="label">Achse (Axis)</span><span class="value" id="axisDisplay">–</span></div>
+        <div class="row"><span class="label">Potenz</span><span class="value" id="potenzDisplay">–</span></div>
+        <div class="row"><span class="label">Δt (ms)</span><span class="value" id="deltaDisplay">–</span></div>
+        <div class="row"><span class="label">nano</span><span class="value" id="nanoDisplay">–</span></div>
+        <div class="row"><span class="label">rein</span><span class="value" id="reinDisplay">–</span></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <h2>🌐 ORBIT · 9 ACHSEN · PFAD</h2>
+        <canvas id="orbitCanvas" width="420" height="420"></canvas>
+        <div style="font-size:11px; color:#5a6a7a; text-align:center; margin-top:4px;">
+          <span id="orbitLegend">● OMNI · All‑Engine · Achse —</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="card">
+    <h2>📜 BOOT‑LOG · CHRONIK</h2>
+    <div class="log" id="logBox">
+      <div class="entry"><span class="time">[init]</span> <span class="msg">ULTRA‑KERNEL · OMNI initialisiert.</span></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="stat"><span class="dot-sm stage"></span> STAGE</div>
+    <div class="stat"><span class="dot-sm air"></span> AIR</div>
+    <div class="stat"><span class="dot-sm aiv"></span> AIV</div>
+    <div class="stat"><span class="dot-sm omni"></span> OMNI</div>
+    <div class="stat">⚡ Energie: <span id="footerEnergy">0%</span></div>
+  </div>
+
+</div>
+
+<script>
+// ================================================================
+// 1. PFAD & STATE (erweitert mit allen Parametern)
+// ================================================================
+const PFAD = [3, 9, 81, 243, 81, 9];
+const ACHSEN = ["d", "e", "i", "n", "o", "r", "s", "u", "w"];
+const POTENZEN = [1, 3, 9, 27, 81, 243, 729];
+
+const state = {
+  mode: 'stage',
+  pathIndex: 2,
+  a81: 81,
+  axis: '-',
+  potenz: '-',
+  delta: 0,
+  zahnrad: 0,
+  step: 0,
+  lastTickTime: performance.now(),
+  energy: 0,
+  nano: '-',
+  rein: '-',
+  ultra: true,
+  connected: false,
+  connectTime: 0
 };
 
-// AXIS
-const AXIS = {
-  base: () => STATE.achsen,
-  x: () => STATE.achsen * 9,
-  y: () => STATE.achsen * 9,
-  z: () => STATE.achsen * 9
+// ================================================================
+// 2. CIRCLE ENGINE (kreisbasiert – ULTRA‑KERNEL-Stil)
+// ================================================================
+const Circle = {
+  _idx: 2,
+  tick() {
+    const angle = state.zahnrad * 30;
+    this._idx = Math.floor((angle / 360) * PFAD.length) % PFAD.length;
+    return {
+      a81: PFAD[this._idx],
+      axis: ACHSEN[state.zahnrad % ACHSEN.length],
+      potenz: POTENZEN[this._idx % POTENZEN.length],
+      pathIndex: this._idx,
+      nano: (PFAD[this._idx] / 9).toFixed(2),
+      rein: Math.sqrt(PFAD[this._idx]).toFixed(2)
+    };
+  }
 };
 
-// CANVAS
-const canvas = document.getElementById("orbitCanvas");
-const ctx = canvas.getContext("2d");
-let t = 0;
-
-// RENDER
-function render() {
-  t += 0.01;
-  ctx.clearRect(0,0,500,500);
-
-  const cx = 250 + Math.sin(t) * AXIS.x();
-  const cy = 250 + Math.cos(t) * AXIS.y();
-
-  ctx.fillStyle = "#0f0";
-  ctx.beginPath();
-  ctx.arc(cx, cy, AXIS.z()*0.1 + 10, 0, Math.PI*2);
-  ctx.fill();
-
-  document.getElementById("engineOut").innerText =
-    "MODE: " + STATE.mode + "\n" +
-    "ACHSEN: " + STATE.achsen + "\n" +
-    "UNI‑9: " + STATE.uni9 + "\n" +
-    "A81: " + STATE.a81;
-  
-  requestAnimationFrame(render);
+// ================================================================
+// 3. FUSION ENGINE (linear – AIR/OMNI)
+// ================================================================
+function fusionTick() {
+  state.pathIndex = (state.pathIndex + 1) % PFAD.length;
+  state.a81 = PFAD[state.pathIndex];
+  state.potenz = POTENZEN[state.step % POTENZEN.length];
+  state.axis = ACHSEN[state.step % ACHSEN.length];
+  state.zahnrad = (state.zahnrad + 1) % 12;
+  state.nano = (state.a81 / 9).toFixed(2);
+  state.rein = Math.sqrt(state.a81).toFixed(2);
 }
 
-// BUTTON: UNI‑9
-document.getElementById("btnUni9").addEventListener("click", () => {
-  STATE.achsen = 9;
-  STATE.uni9 = true;
-  STATE.mode = "UNI‑9";
+// ================================================================
+// 4. MODUS-UMSCHALTER (STAGE / AIR / AIV / OMNI)
+// ================================================================
+function checkMode() {
+  const z = state.zahnrad;
+  let newMode;
+  if (z < 4) newMode = 'stage';
+  else if (z < 8) newMode = 'air';
+  else if (z < 10) newMode = 'aiv';
+  else newMode = 'omni';
+
+  if (newMode !== state.mode) {
+    state.mode = newMode;
+    log(`🔄 Moduswechsel → ${newMode.toUpperCase()} (Zahnrad ${z})`, newMode);
+  }
+}
+
+// ================================================================
+// 5. ENGINE-ROUTING (Master‑Kern)
+// ================================================================
+function stepEngine() {
+  checkMode();
+
+  if (state.mode === 'stage') {
+    const c = Circle.tick();
+    Object.assign(state, c);
+    state.zahnrad = (state.zahnrad + 1) % 12;
+  } else if (state.mode === 'air') {
+    fusionTick();
+  } else if (state.mode === 'aiv') {
+    const c = Circle.tick();
+    fusionTick();
+    state.a81 = c.a81;
+    state.potenz = c.potenz;
+    state.pathIndex = c.pathIndex;
+    state.nano = c.nano;
+    state.rein = c.rein;
+  } else if (state.mode === 'omni') {
+    const c = Circle.tick();
+    fusionTick();
+    state.a81 = Math.round((c.a81 + state.a81) / 2);
+    state.pathIndex = Math.round((c.pathIndex + state.pathIndex) / 2) % PFAD.length;
+    state.potenz = POTENZEN[state.pathIndex % POTENZEN.length];
+    state.nano = (state.a81 / 9).toFixed(2);
+    state.rein = Math.sqrt(state.a81).toFixed(2);
+    state.axis = (state.step % 2 === 0) ? c.axis : state.axis;
+    state.energy = Math.min(100, state.energy + 5);
+  }
+
+  state.energy = Math.min(100, Math.max(0, state.energy + 2 - 0.3));
+  const now = performance.now();
+  state.delta = now - state.lastTickTime;
+  state.lastTickTime = now;
+  state.step++;
+}
+
+// ================================================================
+// 6. ORBIT-RENDER (mit Teilchen und ULTRA-Flair)
+// ================================================================
+let particles = [];
+
+function drawOrbit() {
+  const c = document.getElementById('orbitCanvas');
+  const ctx = c.getContext('2d');
+  const w = c.width, h = c.height;
+  const cx = w/2, cy = h/2, r = 150;
+  const t = Date.now() / 1000;
+
+  ctx.clearRect(0, 0, w, h);
+
+  // ─── Teilchen (Fluss) ───
+  const activeIdx = ACHSEN.indexOf(state.axis);
+  if (activeIdx !== -1 && state.axis !== '-') {
+    const angle = (activeIdx / ACHSEN.length) * 2 * Math.PI - Math.PI/2;
+    const px = cx + r * Math.cos(angle);
+    const py = cy + r * Math.sin(angle);
+    for (let i = 0; i < 2; i++) {
+      particles.push({
+        x: px + (Math.random()-0.5) * 20,
+        y: py + (Math.random()-0.5) * 20,
+        vx: (Math.random()-0.5) * 2,
+        vy: (Math.random()-0.5) * 2,
+        life: 1,
+        size: 2 + Math.random() * 4,
+        color: state.mode === 'omni' ? '#b388ff' : '#ffd866'
+      });
+    }
+  }
+  particles = particles.filter(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.life -= 0.015;
+    return p.life > 0;
+  });
+
+  // ─── Punkte ───
+  const points = ACHSEN.map((_, i) => {
+    const angle = (i / ACHSEN.length) * 2 * Math.PI - Math.PI/2 + Math.sin(t * 0.1) * 0.02;
+    return { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
+  });
+
+  ctx.strokeStyle = '#1a2230';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  points.forEach((p, i) => {
+    const next = points[(i+1) % points.length];
+    ctx.moveTo(p.x, p.y);
+    ctx.lineTo(next.x, next.y);
+  });
+  ctx.stroke();
+
+  // ─── Teilchen zeichnen ───
+  particles.forEach(p => {
+    ctx.globalAlpha = p.life * 0.6;
+    ctx.fillStyle = p.color || '#ffd866';
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+    ctx.fill();
+  });
+  ctx.globalAlpha = 1;
+
+  // ─── Knoten ───
+  points.forEach((p, i) => {
+    const active = (ACHSEN[i] === state.axis);
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, active ? 26 : 16, 0, 2 * Math.PI);
+    ctx.fillStyle = active ? '#ffd866' : '#0e141c';
+    ctx.fill();
+    ctx.strokeStyle = active ? '#ffd866' : '#2a3a4a';
+    ctx.lineWidth = active ? 2 : 1;
+    ctx.stroke();
+    ctx.shadowColor = active ? '#ffd86688' : 'transparent';
+    ctx.shadowBlur = active ? 20 : 0;
+    ctx.fillStyle = active ? '#06080c' : '#5a6a7a';
+    ctx.font = '600 16px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(ACHSEN[i], p.x, p.y);
+    ctx.shadowBlur = 0;
+  });
+
+  // ─── Legende ───
+  const modeColor = state.mode === 'stage' ? '#6ec8ff' :
+                    state.mode === 'air' ? '#ffd866' :
+                    state.mode === 'aiv' ? '#ff7b7b' : '#b388ff';
+  const engineLabel = state.mode === 'air' ? 'Fusion' :
+                       state.mode === 'aiv' ? 'Hybrid' :
+                       state.mode === 'omni' ? '⚡ OMNI' : 'Circle';
+  document.getElementById('orbitLegend').innerHTML =
+    `● <span style="color:${modeColor}">${state.mode.toUpperCase()}</span> · ${engineLabel} · Achse ${state.axis !== '-' ? state.axis.toUpperCase() : '—'}`;
+}
+
+// ================================================================
+// 7. DISPLAY
+// ================================================================
+function updateDisplay() {
+  document.getElementById('zahnradDisplay').textContent = state.zahnrad;
+  document.getElementById('tickDisplay').textContent = state.step;
+  document.getElementById('a81Display').textContent = state.a81;
+  document.getElementById('pathIndexDisplay').textContent = state.pathIndex;
+  document.getElementById('axisDisplay').textContent = state.axis;
+  document.getElementById('potenzDisplay').textContent = state.potenz;
+  document.getElementById('deltaDisplay').textContent = state.delta.toFixed(1);
+  document.getElementById('nanoDisplay').textContent = state.nano;
+  document.getElementById('reinDisplay').textContent = state.rein;
+
+  const energy = Math.round(state.energy);
+  document.getElementById('energyFill').style.width = energy + '%';
+  document.getElementById('footerEnergy').textContent = energy + '%';
+
+  const modeEl = document.getElementById('modeDisplay');
+  modeEl.textContent = state.mode;
+  modeEl.className = 'mode-indicator mode-' + state.mode;
+
+  const dot = document.getElementById('bootDot');
+  dot.className = 'dot dot-' + state.mode;
+  document.getElementById('bootStatus').textContent = state.mode.toUpperCase();
+
+  const card = document.getElementById('modeCard');
+  card.className = 'card ' + state.mode + '-card';
+
+  const idx = state.pathIndex;
+  for (let i = 0; i < PFAD.length; i++) {
+    const el = document.getElementById('p' + i);
+    if (el) {
+      el.className = (i === idx) ? 'active' : '';
+      el.textContent = PFAD[i];
+    }
+  }
+
+  drawOrbit();
+}
+
+// ================================================================
+// 8. LOG
+// ================================================================
+function log(msg, type = '') {
+  const box = document.getElementById('logBox');
+  const time = new Date().toLocaleTimeString('de-DE');
+  const entry = document.createElement('div');
+  entry.className = 'entry';
+  entry.innerHTML = `<span class="time">[${time}]</span> <span class="msg ${type}">${msg}</span>`;
+  box.prepend(entry);
+  while (box.children.length > 40) box.lastChild?.remove();
+}
+
+// ================================================================
+// 9. STEP / LOOP / OMNI / RESET
+// ================================================================
+let loop = null;
+
+function step() {
+  stepEngine();
+  updateDisplay();
+  const tag = state.mode === 'omni' ? '🌀' : state.mode;
+  log(`Step ${state.step} · ${tag.toUpperCase()} · A81=${state.a81} · Achse=${state.axis}`, state.mode);
+}
+
+function toggleLoop() {
+  if (loop) {
+    clearInterval(loop);
+    loop = null;
+    document.getElementById('loopBtn').textContent = '▶ Loop';
+    log('Loop gestoppt.');
+  } else {
+    loop = setInterval(step, 500);
+    document.getElementById('loopBtn').textContent = '⏹ Loop';
+    log('Loop gestartet.');
+  }
+}
+
+function toggleOmni() {
+  if (state.mode === 'omni') {
+    state.zahnrad = 8;
+    checkMode();
+    log('🌀 OMNI deaktiviert → AIV', 'omni');
+  } else {
+    state.zahnrad = 10;
+    checkMode();
+    log('🌀 OMNI aktiviert! Fusion aller Engines.', 'omni');
+  }
+  updateDisplay();
+}
+
+function resetSystem() {
+  if (loop) { clearInterval(loop); loop = null; document.getElementById('loopBtn').textContent = '▶ Loop'; }
+  state.pathIndex = 2;
+  state.a81 = 81;
+  state.axis = '-';
+  state.potenz = '-';
+  state.delta = 0;
+  state.zahnrad = 0;
+  state.step = 0;
+  state.lastTickTime = performance.now();
+  state.mode = 'stage';
+  state.energy = 0;
+  state.nano = '-';
+  state.rein = '-';
+  particles = [];
+  updateDisplay();
+  log('⟲ System zurückgesetzt.', 'error');
+}
+
+// ================================================================
+// 10. EVENTS & INIT
+// ================================================================
+document.getElementById('stepBtn').addEventListener('click', step);
+document.getElementById('loopBtn').addEventListener('click', toggleLoop);
+document.getElementById('stopBtn').addEventListener('click', () => {
+  if (loop) { clearInterval(loop); loop = null; document.getElementById('loopBtn').textContent = '▶ Loop'; log('Loop manuell gestoppt.'); }
 });
+document.getElementById('omniBtn').addEventListener('click', toggleOmni);
+document.getElementById('resetBtn').addEventListener('click', resetSystem);
 
-// BUTTON: A81‑AXIS
-document.getElementById("btnA81").addEventListener("click", () => {
-  STATE.achsen = 81;
-  STATE.a81 = true;
-  STATE.mode = "A81‑AXIS";
-});
-
-// START
-render();
-
+log('🌀 ULTRA‑KERNEL · OMNI · A81‑AXIS geladen', 'omni');
+log('Zahnrad 0-3 STAGE, 4-7 AIR, 8-9 AIV, 10-11 OMNI.', 'air');
+updateDisplay();
 </script>
 </body>
 </html>
