@@ -6,3 +6,16 @@ ROM.on = function(name, content){
     this.content = content;  // Inhalt der Übergabe
     return this;
 };
+// Transwarp-Übergabe
+MassHWTranswarp.set = function(qi, iqq, delta){
+
+    // ROM.on wird automatisch ausgelöst
+    ROM.on("MassHWTranswarp", { qi, iqq, delta });
+
+    return {
+        qi,
+        iqq,
+        delta,
+        rom: ROM.state
+    };
+};
