@@ -1,17 +1,27 @@
 class Schuss {
 
     constructor(){
-        this.ready = false;        // Zünder geladen?
-        this.stage = null;         // aktuelle Stage
-        this.nextStage = null;     // Zielstage
-        this.payload = null;       // Daten aus Urne / Flanke
+        this.ready = false;
+        this.stage = null;
+        this.nextStage = null;
+        this.payload = null;
+
+        // bios → bio
+        this.sync = null;      // arg.sync
+        this.pump = null;      // PUMPE
+        this.time = null;      // TimeHW
     }
 
     // Zünder laden (von Flanke)
     load(flankeData){
-        this.stage = flankeData.from;
+        this.stage     = flankeData.from;
         this.nextStage = flankeData.to;
-        this.payload = flankeData;
+        this.payload   = flankeData;
+
+        // NATURA + arg.sync + PUMPE + Zeitfluss
+        this.sync = arg.sync(this.stage);
+        this.pump = PUMPE.natur(this.stage);
+        this.time = TimeHW.update();
 
         this.ready = true;
     }
@@ -24,11 +34,26 @@ class Schuss {
 
         return {
             fired: true,
+
+            // PFAD
             from: this.stage,
             to: this.nextStage,
-            mode: this.payload.mode,     // ICE / FEUER
-            honor: this.payload.honor,   // Ruhm-Level
-            payload: this.payload
+
+            // Mode (ICE / FEUER)
+            mode: this.payload.mode,
+
+            // Honor-Level
+            honor: this.payload.honor,
+
+            // bios → bio
+            sync: this.sync,
+            pump: this.pump,
+            time: this.time,
+
+            // Originaldaten
+            payload: this.payload,
+
+            tag: "Schuss.bio"
         };
     }
 }
