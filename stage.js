@@ -2,29 +2,68 @@ class Stage {
 
     constructor(){
         this.stage = null;
+
+        // PFAD-Matrix (bios → bio)
+        this.matrix = [3, 9, 81, 243, 729];
     }
 
-    // Ermittelt die Stage anhand der Größe
+    // Stage erkennen
     detect(size){
-        switch(size){
-            case 3:   return 3;     // 3×1 oder 3×3
-            case 9:   return 9;     // 3×3 Block
-            case 81:  return 81;    // 9×9 Core
-            case 243: return 243;   // Corridor Level 1
-            case 729: return 729;   // Corridor Level 2
-            default:
-                throw new Error(`Unbekannte Stage-Größe: ${size}`);
+        if(!this.matrix.includes(size)){
+            throw new Error(`Unbekannte Stage-Größe: ${size}`);
         }
+        return size;
     }
 
-    // Setzt die Stage
+    // Stage setzen + NATURA + arg.sync + PUMPE
     set(size){
-        this.stage = this.detect(size);
+        const stage = this.detect(size);
+        this.stage = stage;
+
+        // NATURA (bios)
+        this.natura = PUMPE.natur(stage);
+
+        // arg.sync (bio)
+        this.sync = arg.sync(stage);
+
+        // PFAD (3→9→81→243→729→3)
+        this.next = this.nextStage(stage);
+        this.prev = this.prevStage(stage);
+
+        // Zeitfluss
+        this.time = TimeHW.update();
+
+        return this.output();
     }
 
-    // Holt die Stage
+    // PFAD: nächste Stage
+    nextStage(stage){
+        const index = this.matrix.indexOf(stage);
+        return this.matrix[index + 1] || 3; // ↺ Reset
+    }
+
+    // PFAD: vorherige Stage
+    prevStage(stage){
+        const index = this.matrix.indexOf(stage);
+        return index > 0 ? this.matrix[index - 1] : 729; // Rückführung
+    }
+
+    // Ausgabe
+    output(){
+        return {
+            stage: this.stage,
+            next: this.next,
+            prev: this.prev,
+            natura: this.natura,
+            sync: this.sync,
+            time: this.time,
+            tag: "Stage.bio"
+        };
+    }
+
+    // Stage holen
     get(){
-        return this.stage;
+        return this.output();
     }
 }
 
