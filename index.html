@@ -3,391 +3,98 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3xi3ix3 · ULTRA-KERNEL · ALLROUNDER</title>
+  <title>UNI‑9 · A81‑AXIS · iki1uc</title>
+
   <style>
     body { background:#000; color:#0f0; font-family:Consolas; padding:20px; }
-    h1, h2 { color:#6cf; }
-    pre { background:#111; border:1px solid #333; padding:10px; margin-bottom:20px; }
-    .console { background:#111; border:1px solid #444; padding:10px; white-space:pre-wrap; }
+    h1 { color:#6cf; }
     canvas { background:#111; border:1px solid #333; margin-top:20px; display:block; }
-    .controls { margin:10px 0; }
-    .controls button { background:#222; color:#0f0; border:1px solid #0f0; padding:4px 12px; margin:2px; cursor:pointer; }
-    .controls button:hover { background:#0f0; color:#000; }
-    .controls button.kernel { border-color:#f0f; color:#f0f; }
-    .controls button.kernel:hover { background:#f0f; color:#000; }
+    .console { background:#111; border:1px solid #444; padding:10px; white-space:pre-wrap; }
+    button { background:#222; color:#0f0; border:1px solid #0f0; padding:6px 14px; margin:4px; }
+    button:hover { background:#0f0; color:#000; }
   </style>
 </head>
+
 <body>
 
-<h1>3xi3ix3 · ULTRA-KERNEL · ALLROUNDER</h1>
-<pre>
-CORE     = iki1uc
-KERNEL   = ULTRA-6a6y6out
-ENGINE   = 3xi3ix3
-STATE    = ACTIVE
-READY    = 100%
-AXIS     = <span id="axisDisplay">820</span> (sichtbar skaliert)
-</pre>
+<h1>UNI‑9 · A81‑AXIS · iki1uc</h1>
 
-<div class="controls">
-  <button id="btnConnect">🔗 CONNECT GRUPPEN</button>
-  <button id="btnAxisUp">⬆️ ACHSEN +100</button>
-  <button id="btnAxisDown">⬇️ ACHSEN -100</button>
-  <button id="btnReset">⟲ RESET</button>
-  <button id="btnResetKernel" class="kernel">🧠 KERNEL REORG</button>
-</div>
-
-<h2>Engine‑Konsole</h2>
-<div id="engineOut" class="console">Engine wird geladen…</div>
-
-<h2>Tri‑Hexa‑Orbit Renderer</h2>
+<div class="console" id="engineOut">UNI‑9 Engine lädt…</div>
 <canvas id="orbitCanvas" width="500" height="500"></canvas>
 
+<button id="btnUni9">⚡ UNI‑9 START</button>
+<button id="btnA81">🔺 A81‑AXIS BOOST</button>
+
 <script type="module">
-// ============================================================
-// IMPORTS — alle Module aus dem Repo
-// ============================================================
+
+// MODULE IMPORTS
 import { KIT } from "./kit.js";
-import { SLI_PORT } from "./SLI-CORE.js";
-import { SLI_MASTER } from "./sli.js";
-import { SYN } from "./SYN.js";
+import { resetKernel } from "./resetKernel.js";
 import { QUANT } from "./QUANT.js";
+import { SYN } from "./SYN.js";
 import { QUO } from "./QUO.js";
 import { PYRAMIDE } from "./PYRAMIDE.js";
 
-// ============================================================
-// STATE — zentrale Konstante für Achsen
-// ============================================================
+// STATE — 8 → 9 → 81
 const STATE = {
-  achsen: 820,
-  connected: false,
-  connectTime: 0,
-  mode: "ALLROUNDER",
-  ultra: true,
-  arg: { sync: false, timestamp: 0 }
+  achsen: 8,
+  uni9: false,
+  a81: false,
+  mode: "INIT",
+  arg: { sync:false }
 };
 
-// ============================================================
-// AXIS-SCALE — x / y / z als Funktionen
-// ============================================================
+// AXIS
 const AXIS = {
   base: () => STATE.achsen,
-  x: () => Math.min(1500, AXIS.base() * 0.15),
-  y: () => Math.min(1500, AXIS.base() * 0.15),
-  z: () => Math.min(1500, AXIS.base() * 0.10)
+  x: () => STATE.achsen * 9,
+  y: () => STATE.achsen * 9,
+  z: () => STATE.achsen * 9
 };
 
-// ============================================================
-// ANIME-QUANT — echte Bilder aus /anime/
-// ============================================================
-const ANIME_QUANT = {
-  frames: [
-    "./anime/PI.png",
-    "./anime/cube.png",
-    "./anime/i.doo.png",
-    "./anime/my.me.png"
-  ],
-  get(t) {
-    const idx = Math.floor((t * 4) % this.frames.length);
-    const img = new Image();
-    img.src = this.frames[idx];
-    return { img, index: idx, axis: "ANIME-QUANT", mode: "ULTRA-ANIME" };
-  }
-};
-
-// ============================================================
-// ULTRA-PORT — 6a6y6out IN/OUT
-// ============================================================
-const ULTRA_PORT = {
-  IN: { ID:"ULTRA-6a6y6out", MODE:"ULTRA-IN", PORT:"BOOST-IN" },
-  OUT:{ ID:"ULTRA-6a6y6out", MODE:"ULTRA-OUT", PORT:"BOOST-OUT" },
-  flow(x) {
-    return {
-      id: this.IN.ID,
-      mode: this.IN.MODE,
-      in: this.IN.PORT,
-      out: this.OUT.PORT,
-      a: KIT.AXIOM["6a"](x),
-      y: KIT.AXIOM["6y"](x, x),
-      iy: KIT.AXIOM["6iy"](x),
-      outState: KIT.AXIOM["6out"](x),
-      ultra: KIT.ULTRA,
-      axis: "ORG-REORG-NC",
-      state: "ULTRA-PORT"
-    };
-  }
-};
-
-// ======================================================
-// KERNEL RESET · org → reorg · stabil · ALLROUNDER-kompatibel
-// ======================================================
-export function resetKernel(STATE, AXIS, ULTRA_PORT) {
-
-  // 1) arg.sync – Synchronisationspunkt
-  const arg = {
-    sync: true,
-    timestamp: Date.now(),
-    mode: "REORG"
-  };
-
-  // 2) ORG – Ursprungszustand
-  const org = {
-    achsen: 820,
-    connected: false,
-    mode: "ORG",
-    ultra: false,
-    connectTime: 0,
-    lastReset: Date.now(),
-    modeHistory: ["ORG"]
-  };
-
-  // 3) REORG – neuer Zustand
-  const reorg = {
-    ...org,
-    mode: "REORG",
-    ultra: true,
-    sync: arg,
-    resetTime: performance.now(),
-    modeHistory: [...org.modeHistory, "REORG"]
-  };
-
-  // 4) AXIS – sauber neu binden
-  const newAxis = {
-    base: () => reorg.achsen,
-    x: () => Math.min(1500, reorg.achsen * 0.15),
-    y: () => Math.min(1500, reorg.achsen * 0.15),
-    z: () => Math.min(1500, reorg.achsen * 0.10)
-  };
-
-  // 5) ULTRA_PORT – sauber neu binden
-  const newPort = {
-    IN: ULTRA_PORT.IN,
-    OUT: ULTRA_PORT.OUT,
-    flow: (x) => {
-      const base = ULTRA_PORT.flow(x);
-      return {
-        ...base,
-        reset: true,
-        sync: arg.sync,
-        kernel: "REORG"
-      };
-    }
-  };
-
-  // 6) Rückgabe
-  return {
-    state: reorg,
-    axis: newAxis,
-    port: newPort,
-    arg: arg,
-    message: `🔄 KERNEL REORG · ${arg.timestamp} · sync=${arg.sync}`
-  };
-}
-
-
-// ============================================================
-// CANVAS SETUP
-// ============================================================
-const out = document.getElementById("engineOut");
+// CANVAS
 const canvas = document.getElementById("orbitCanvas");
 const ctx = canvas.getContext("2d");
 let t = 0;
 
-// ============================================================
-// ORBIT-RENDERER — mit AXIS-SCALE und Anime
-// ============================================================
-function renderOrbit(t) {
-  const qAnime = ANIME_QUANT.get(t);
-  const ultraFlow = ULTRA_PORT.flow(t);
+// RENDER
+function render() {
+  t += 0.01;
+  ctx.clearRect(0,0,500,500);
 
-  ctx.clearRect(0, 0, 500, 500);
-
-  // ─── Alle Achsen sichtbar zeichnen ───
-  const axesCount = STATE.achsen;
-  for (let i = 0; i < axesCount; i++) {
-    const angle = (i / axesCount) * Math.PI * 2 + t * 0.001;
-    const dist = 100 + (i / axesCount) * 120;
-    const x = 250 + Math.cos(angle) * dist;
-    const y = 250 + Math.sin(angle) * dist;
-    const alpha = 0.02 + (i / axesCount) * 0.04;
-    ctx.fillStyle = `rgba(255,215,0,${alpha})`;
-    ctx.beginPath();
-    ctx.arc(x, y, 1 + (i / axesCount) * 2, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  // ─── Orbit-Punkt mit AXIS.x/y/z ───
   const cx = 250 + Math.sin(t) * AXIS.x();
   const cy = 250 + Math.cos(t) * AXIS.y();
-  const radius = AXIS.z() * 0.3 + 10;
 
   ctx.fillStyle = "#0f0";
   ctx.beginPath();
-  ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+  ctx.arc(cx, cy, AXIS.z()*0.1 + 10, 0, Math.PI*2);
   ctx.fill();
 
-  // ─── Anime-Bild ───
-  if (qAnime.img.complete && qAnime.img.naturalWidth > 0) {
-    ctx.drawImage(qAnime.img, cx - 40, cy - 40, 80, 80);
-  } else {
-    ctx.fillStyle = "#6cf";
-    ctx.font = "12px Consolas";
-    ctx.fillText("🔄 Lade Anime...", cx - 50, cy + 50);
-  }
-
-  // ─── ULTRA-Port Status ───
-  ctx.fillStyle = "#0f0";
-  ctx.font = "12px Consolas";
-  ctx.fillText("ULTRA: " + ultraFlow.outState.tag, cx - 40, cy + 60);
-}
-
-// ============================================================
-// PX-PC-GHOST VISUALISIERUNG — mit AXIS-SCALE
-// ============================================================
-function renderDevices(t) {
-  const devices = ["PX", "PC", "GHOST"];
-  const baseX = 50;
-  const baseY = 420 + AXIS.z() * 0.1;
-
-  devices.forEach((dev, i) => {
-    const dx = baseX + i * (150 + AXIS.x() * 0.05);
-    const dy = baseY;
-
-    ctx.fillStyle = STATE.connected ? "#0f0" : "#333";
-    ctx.fillRect(dx, dy, 120, 40);
-
-    ctx.fillStyle = "#0f0";
-    ctx.font = "14px Consolas";
-    ctx.fillText(dev, dx + 10, dy + 25);
-
-    ctx.strokeStyle = STATE.connected ? "#6cf" : "#444";
-    ctx.beginPath();
-    ctx.moveTo(dx + 120, dy + 20);
-    ctx.lineTo(dx + 150, dy + 20);
-    ctx.stroke();
-  });
-
-  ctx.strokeStyle = STATE.connected ? "#f0f" : "#222";
-  ctx.beginPath();
-  ctx.moveTo(50, baseY + 40);
-  ctx.lineTo(450, baseY + 40);
-  ctx.stroke();
-}
-
-// ============================================================
-// ENGINE-KONSOLE — alle Kernel + SLI-RUN-3
-// ============================================================
-function renderConsole(t) {
-  const q = QUANT.atom(t);
-  const syn = SYN.run(t);
-  const quo = QUO.state(t);
-  const pyr = PYRAMIDE.flow(t);
-  const ultra = KIT.pipeline(t);
-  const sliRun3 = SLI_MASTER.ALL([{ N:3, H:1, B:2, T:3 }]);
-
-  out.innerText =
-    "ULTRA-KERNEL ONLINE\n\n" +
-    "QUANT: " + q.atom + "\n" +
-    "SYN:   " + syn.mode + "\n" +
-    "QUO:   " + quo.tag + "\n" +
-    "PYRA:  " + pyr.axis + "\n" +
-    "SLI-RUN3: " + sliRun3[0].core.ENGINE + "\n" +
-    "ULTRA: " + ultra.out.tag + "\n" +
-    "─── ACHSEN ───\n" +
-    "STATE.achsen = " + STATE.achsen + "\n" +
-    "AXIS.x() = " + AXIS.x().toFixed(2) + "\n" +
-    "AXIS.y() = " + AXIS.y().toFixed(2) + "\n" +
-    "AXIS.z() = " + AXIS.z().toFixed(2) + "\n" +
-    "─── KERNEL ───\n" +
+  document.getElementById("engineOut").innerText =
     "MODE: " + STATE.mode + "\n" +
-    "SYNC: " + (STATE.arg?.sync ? "⚡ aktiv" : "⏸ ruhend");
-}
-
-// ============================================================
-// LOOP — alles zusammen
-// ============================================================
-function loop() {
-  t += 0.01;
-  renderOrbit(t);
-  renderDevices(t);
-  renderConsole(t);
-  document.getElementById("axisDisplay").textContent = STATE.achsen;
-  requestAnimationFrame(loop);
-}
-
-// ============================================================
-// CONNECT — Gruppen verbinden
-// ============================================================
-function connectGruppen() {
-  STATE.connected = !STATE.connected;
-  STATE.connectTime = performance.now();
-  out.innerText += "\n🔗 GRUPPEN " + (STATE.connected ? "verbunden" : "getrennt");
-}
-
-function log(msg, channel) {
-  console.log(`[${channel}] ${msg}`);
-  out.innerText += "\n" + msg;
-}
-
-function updateUI() {
-  out.innerText += "\nUI aktualisiert.";
-}
-
-// ============================================================
-// BUTTONS
-// ============================================================
-document.getElementById('btnConnect').addEventListener('click', () => {
-  connectGruppen();
-  log('🔗 GRUPPEN · neu verbunden', 'ds9');
-  updateUI();
-});
-
-document.getElementById('btnAxisUp').addEventListener('click', () => {
-  STATE.achsen = Math.min(1500, STATE.achsen + 100);
-  log(`⬆️ ACHSEN auf ${STATE.achsen} erhöht`, 'achse');
-});
-
-document.getElementById('btnAxisDown').addEventListener('click', () => {
-  STATE.achsen = Math.max(100, STATE.achsen - 100);
-  log(`⬇️ ACHSEN auf ${STATE.achsen} reduziert`, 'achse');
-});
-
-document.getElementById('btnReset').addEventListener('click', () => {
-  STATE.achsen = 820;
-  STATE.connected = false;
-  log('⟲ RESET · Achsen auf 820', 'flow');
-});
-
-// ============================================================
-// KERNEL RESET BUTTON — org → reorg mit arg.sync
-// ============================================================
-document.getElementById('btnResetKernel').addEventListener('click', () => {
+    "ACHSEN: " + STATE.achsen + "\n" +
+    "UNI‑9: " + STATE.uni9 + "\n" +
+    "A81: " + STATE.a81;
   
-  // STATE aktualisieren
-  STATE.achsen = result.state.achsen;
-  STATE.connected = result.state.connected;
-  STATE.mode = result.state.mode;
-  STATE.ultra = result.state.ultra;
-  STATE.arg = result.arg;
-  
-  // AXIS neu setzen (mit korrekter Bindung)
-  AXIS.base = result.axis.base;
-  AXIS.x = result.axis.x;
-  AXIS.y = result.axis.y;
-  AXIS.z = result.axis.z;
-  
-  // ULTRA_PORT aktualisieren
-  ULTRA_PORT.flow = result.port.flow;
-  
-  log(`🔧 ${result.message}`, 'ds9');
-  log(`📐 ACHSEN auf ${STATE.achsen} gesetzt`, 'achse');
-  updateUI();
+  requestAnimationFrame(render);
+}
+
+// BUTTON: UNI‑9
+document.getElementById("btnUni9").addEventListener("click", () => {
+  STATE.achsen = 9;
+  STATE.uni9 = true;
+  STATE.mode = "UNI‑9";
 });
 
-// ============================================================
+// BUTTON: A81‑AXIS
+document.getElementById("btnA81").addEventListener("click", () => {
+  STATE.achsen = 81;
+  STATE.a81 = true;
+  STATE.mode = "A81‑AXIS";
+});
+
 // START
-// ============================================================
-loop();
+render();
 
 </script>
 </body>
