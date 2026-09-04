@@ -1,47 +1,19 @@
-class RecallPipeline {
+const rawEnergy = MassHW.calcEnergie(TimeHW.delta);
 
-    constructor(){
-        this.order = [3, 9, 81, 243, 729];
-    }
+// Saubere Übergabe: bios → bio
+const bioEnergy = rawEnergy / 7;
 
-    // HWpipeline3 (3 Schritte)
-    pipeline3(stage){
-        return this.build(stage, 3, "HWpipeline3");
-    }
+// Bio‑Slots
+const natura = {
+    o2: bioEnergy * 3,      // Energie / Feuer
+    h2o: bioEnergy * 2,     // Stabilität / ICE
+    co2: bioEnergy * 1,     // Druck / Gefahr
+    axis: bioEnergy * 1     // A81‑Stabilität
+};
 
-    // HWpipeline6 (6 Schritte)
-    pipeline6(stage){
-        return this.build(stage, 6, "HWpipeline6");
-    }
-
-    // HWpipeline9 (9 Schritte)
-    pipeline9(stage){
-        return this.build(stage, 9, "HWpipeline9");
-    }
-
-    // Hilfsfunktion
-    build(stage, steps, name){
-        const chain = [];
-        let current = stage;
-
-        for(let i = 0; i < steps; i++){
-            current = this.next(current);
-            chain.push(current);
-            if(current === null) break;
-        }
-
-        return {
-            pipe: name,
-            start: stage,
-            chain: chain
-        };
-    }
-
-    next(stage){
-        const index = this.order.indexOf(stage);
-        return this.order[index + 1] || null;
-    }
-}
-
-window.Recall = new RecallPipeline();
-const energy = MassHW.calcEnergie(TimeHW.delta);
+// Runen‑Übergabe
+const runes = {
+    slide: natura.o2,       // Bewegung
+    wette: natura.co2,      // Risiko
+    score: natura.axis      // Ergebnis / Abschluss
+};
