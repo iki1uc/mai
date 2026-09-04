@@ -1,12 +1,8 @@
 // ROM.on – Auto-Befehl: ROM = 1, never 0
-ROM.on = function(){
-    this.state = 1;          // immer ON
-    this.open = true;        // niemals OFF
-    this.emoziginal = true;  // 6D6×y×6 aktiv
+ROM.on = function(name, content){
+    this.state = 1;          // immer aktiv
+    this.open = true;        // niemals geschlossen
+    this.name = name;        // Name der Übergabe
+    this.content = content;  // Inhalt der Übergabe
     return this;
-};
-
-// ROM darf niemals ausgeschaltet werden
-ROM.off = function(){
-    throw new Error("ROM kann nicht OFF sein (ROM = 1 never 0)");
 };
