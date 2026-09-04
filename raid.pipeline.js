@@ -1,4 +1,4 @@
-class RaidPipeline {
+https://github.com/iki1uc/mai/blob/main/raid.pipeline.js class RaidPipeline {
 
     constructor(){
         this.stages = [3, 9, 81, 243, 729];
@@ -28,13 +28,14 @@ class RaidPipeline {
         return this.stages[index - 1];
     }
 
-    // RAID-Übergabe (ICE/FEUER) + ROM.on
+    // RAID-Übergabe (ICE/FEUER) + emoziginal ROM.on
     transfer(stage, payload){
         if(!this.isValid(stage)){
             throw new Error(`Ungültige Stage: ${stage}`);
         }
 
-        ROM.on(); // <<< AUTO-BEFEHL
+        // ROM.on wird mit Name + Inhalt ausgelöst
+        ROM.on("RaidPipeline.transfer", { stage, payload });
 
         const nextStage = this.next(stage);
 
@@ -47,13 +48,14 @@ class RaidPipeline {
         };
     }
 
-    // RAID-Pipeline-Durchlauf + ROM.on
+    // RAID-Pipeline-Durchlauf + emoziginal ROM.on
     run(stage, payload){
         if(!this.isValid(stage)){
             throw new Error(`Ungültige Stage: ${stage}`);
         }
 
-        ROM.on(); // <<< AUTO-BEFEHL
+        // ROM.on wird mit Name + Inhalt ausgelöst
+        ROM.on("RaidPipeline.run", { stage, payload });
 
         return {
             mode: this.mode,
