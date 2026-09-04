@@ -1,38 +1,39 @@
-// gpu.raw.js
-// Roh‑Ebene der GPU: 3E‑Modus (Energie, Echo, Effekt)
-// Keine Shader‑Verstärkung, keine Narrative, keine Pipeline‑Boosts
+// gpu.fussball.js
+// Roh‑Ebene der GPU als Fußball‑Engine
+// 3E-Modus = Energie, Echo, Effekt → Lauf, Pass, Wirkung
 
-export const gpuRAW = {
-    frame: 0,       // reine Frame‑Zählung
-    energy: 0,      // Grundkraft der GPU
-    echo: 0,        // Rückmeldung ohne Hall
-    effect: 0,      // unverstärkter Effekt
+export const gpuFussball = {
+    minute: 0,      // Spielminute / Frame
+    lauf: 0,        // Laufleistung
+    passEcho: 0,    // Rückmeldung vom Team
+    wirkung: 0,     // Einfluss auf den Spielzug
 
-    // Setzt die GPU in den Rohzustand
+    // Spieler startet im Rohzustand
     reset() {
-        this.frame = 0;
-        this.energy = 0;
-        this.echo = 0;
-        this.effect = 0;
+        this.minute = 0;
+        this.lauf = 0;
+        this.passEcho = 0;
+        this.wirkung = 0;
         return this;
     },
 
-    // Reines Rendering ohne c+, Shader, Echo/Hall
-    render() {
-        this.frame++;
-        this.energy = this.frame;
-        this.echo = Math.floor(this.frame / 4);
-        this.effect = Math.floor(this.frame / 12);
+    // Reiner Spieltick ohne Boosts
+    tick() {
+        this.minute++;
+        this.lauf = this.minute;
+        this.passEcho = Math.floor(this.minute / 4);
+        this.wirkung = Math.floor(this.minute / 12);
+
         return {
-            frame: this.frame,
-            energy: this.energy,
-            echo: this.echo,
-            effect: this.effect
+            minute: this.minute,
+            lauf: this.lauf,
+            passEcho: this.passEcho,
+            wirkung: this.wirkung
         };
     },
 
-    // Fair‑Order‑Check (Schiedsrichter‑Modus)
+    // Fair‑Play‑Check (Schiedsrichter)
     fair() {
-        return this.energy >= 0 && this.echo >= 0 && this.effect >= 0;
+        return this.lauf >= 0 && this.passEcho >= 0 && this.wirkung >= 0;
     }
 };
