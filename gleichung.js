@@ -1,54 +1,56 @@
+// Gleichung.js — MAI‑gerechte PUMPE
+
 class Gleichung {
 
     constructor(){
-        this.stage = 3;          // Startwert
-        this.transwarp = true;   // Transwarpkanal aktiv
-        this.continuum = false;  // Continuum-Faltung
+        this.stage = 3;          // PFAD-Start
+        this.transwarp = true;   // 3×-Pumpe
+        this.continuum = false;  // Quadratische Pumpe
     }
 
-    // Jede Zahl wird Stage
-    setStage(value){
-        this.stage = value;
+    // PFAD-Wert setzen
+    setStage(v){
+        this.stage = v;
         return this.stage;
     }
 
-    // Transwarpkanal: Stage * 3
+    // Transwarp = Stage × 3
     transwarpStep(){
-        if(!this.transwarp) return this.stage;
-        return this.stage * 3;
+        return this.transwarp ? this.stage * 3 : this.stage;
     }
 
-    // Continuum: Stage²
+    // Continuum = Stage²
     continuumStep(){
-        if(!this.continuum) return this.stage;
-        return this.stage ** 2;
+        return this.continuum ? this.stage * this.stage : this.stage;
     }
 
-    // Massenbeschleuniger einbauen
-    mass(){
-        MassHWTranswarp.set(
-            this.stage,
-            HitAllxAll.hit(this.stage),
-            TimeHW.delta
-        );
-        return MassHWTranswarp.compute();
+    // MAI-Massenpumpe: Stage × Transwarp × Continuum
+    massPump(){
+        const t = this.transwarpStep();
+        const c = this.continuumStep();
+
+        return {
+            impuls: this.stage * t,
+            kraft:  t * c,
+            energie: c * this.stage,
+            accel: (t + c) / this.stage
+        };
     }
 
-    // Gesamter Transwarp-Zyklus
+    // Gesamter MAI-Fluss
     run(){
-        const s1 = this.setStage(this.stage);
-        const s2 = this.transwarpStep();
-        const s3 = this.continuumStep();
-        const m  = this.mass();
+        const t = this.transwarpStep();
+        const c = this.continuumStep();
+        const m = this.massPump();
 
         return {
             stage: this.stage,
-            transwarp: s2,
-            continuum: s3,
-            mass: m.accel,
+            transwarp: t,
+            continuum: c,
             impuls: m.impuls,
             kraft: m.kraft,
-            energie: m.energie
+            energie: m.energie,
+            accel: m.accel
         };
     }
 }
