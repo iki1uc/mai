@@ -1,22 +1,24 @@
+// Flanke.js — MAI‑gerechte Übergabe‑PUMPE
+
 class Flanke {
 
     constructor(){
-        this.mode = "ICE";       // ICE oder FEUER
-        this.stage = null;       // aktuelle Stage
+        this.mode   = "ICE";     // ICE / FEUER
+        this.stage  = null;      // PFAD-Wert
         this.target = null;      // Übergabe-Ziel
-        this.honor = null;       // Ruhm-Level aus der Urne
-        this.hit = false;        // Hardware-Treffer
+        this.honor  = null;      // Urnen-Echo
+        this.hit    = false;     // Treffer-PUMPE
     }
 
-    // Übernimmt die Werte aus einem Urnen-Eintrag
+    // Urnen-Eintrag übernehmen
     loadFromUrne(entry){
         this.stage = entry.stage;
-        this.mode = entry.element;   // ICE / FEUER
+        this.mode  = entry.element;   // ICE / FEUER
         this.honor = entry.honor;
-        this.hit = true;             // Hardware-Treffer ausgelöst
+        this.hit   = true;            // Treffer-PUMPE aktiv
     }
 
-    // Übergabe vorbereiten (Hardware-Stil)
+    // Übergabe vorbereiten
     prepare(targetStage){
         this.target = targetStage;
 
@@ -25,11 +27,11 @@ class Flanke {
             from: this.stage,
             to: this.target,
             honor: this.honor,
-            hit: this.hit           // zeigt: Treffer ist aktiv
+            hit: this.hit
         };
     }
 
-    // Hardware-Treffer zurücksetzen
+    // Treffer zurücksetzen
     reset(){
         this.hit = false;
     }
