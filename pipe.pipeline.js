@@ -1,29 +1,33 @@
+ROM.on = function(name, content){
+    this.state = 1;          // immer ON
+    this.open = true;        // niemals OFF
+    this.name = name;        // Ereignisname
+    this.content = content;  // Übergabeinhalt
+    return this;
+};
 class PipePipeline {
 
     constructor(){
         this.stages = [3, 9, 81, 243, 729];
     }
 
-    // Prüft, ob Stage gültig ist
     isValid(stage){
         return this.stages.includes(stage);
     }
 
-    // Gibt die nächste Stage zurück
     next(stage){
         const index = this.stages.indexOf(stage);
         if(index === -1) throw new Error(`Ungültige Stage: ${stage}`);
         return this.stages[index + 1] || null;
     }
 
-    // Gibt die vorherige Stage zurück
     prev(stage){
         const index = this.stages.indexOf(stage);
         if(index <= 0) return null;
         return this.stages[index - 1];
     }
 
-    // Übergabe zwischen zwei Stages
+    // Übergabe + ROM.on
     transfer(fromStage, payload){
         if(!this.isValid(fromStage)){
             throw new Error(`Ungültige Stage: ${fromStage}`);
@@ -31,24 +35,35 @@ class PipePipeline {
 
         const toStage = this.next(fromStage);
 
+        // ROM.on wird ausgelöst
+        ROM.on("PipePipeline.transfer", { fromStage, toStage, payload });
+
         return {
             from: fromStage,
             to: toStage,
-            payload: payload
+            payload: payload,
+            rom: ROM.state
         };
     }
 
-    // Pipeline-Durchlauf
+    // Durchlauf + ROM.on
     run(stage, payload){
         if(!this.isValid(stage)){
             throw new Error(`Ungültige Stage: ${stage}`);
         }
 
+        const next = this.next(stage);
+        const prev = this.prev(stage);
+
+        // ROM.on wird ausgelöst
+        ROM.on("PipePipeline.run", { stage, next, prev, payload });
+
         return {
             current: stage,
-            next: this.next(stage),
-            prev: this.prev(stage),
-            payload: payload
+            next: next,
+            prev: prev,
+            payload: payload,
+            rom: ROM.state
         };
     }
 }
