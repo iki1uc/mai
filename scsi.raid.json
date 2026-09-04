@@ -1,21 +1,33 @@
 {
-  "repo": "goal(ice)",
-  "status": "zündung",
-  "mode": "goal(feuer)",
-  "needsMaintenance": "sli.mode",
-
+  "module": "scsi.raid",
+  "status": "active",
   "legitimation": {
-    "INTH": "scsi.raid / SCSI-Compliance / RAID-Controller",
-    "SCH": "KRITIS / physische Sicherung / Schließsysteme"
+    "INTH": "SCSI/RAID-Controller, LUN-Masking, MPIO, Firmware",
+    "SCH": "KRITIS-Zugang, Rack-Sicherung, physische RAID-Schutzmechanik"
   },
 
-  "order": {
-    "pyramide": {
-      "air64": "axis.out",
-      "aiv64": "axis.in"
+  "raid": {
+    "controller": "lsi.megaraid",
+    "mpio": true,
+    "lun": {
+      "masking": "enabled",
+      "targets": ["iqn.raid.array.1", "iqn.raid.array.2"]
+    }
+  },
+
+  "pumpe": {
+    "natur": {
+      "wasser": "stabilität",
+      "o2": "energie",
+      "co2": "rückfluss",
+      "atom": "strukturwechsel"
     },
-    "wuerfel128": "core.mastermind",
-    "pipeline": "cube.pipeline"
+    "axis": "A81",
+    "sync": "arg.sync"
+  },
+
+  "pipeline": {
+    "stage": [3, 9, 81, 243, 729],
+    "use": "Pipeline9.useA81"
   }
 }
-
