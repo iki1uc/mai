@@ -1,15 +1,30 @@
-{
-  "repo": "goal(ice)",
-  "status": "zündung",
-  "mode": "goal(feuer)",
-  "needsMaintenance": "sli.mode",
+PUMPE.map = function(config){
 
-  "order": {
-    "pyramide": {
-      "air64": "axis.out",
-      "aiv64": "axis.in"
-    },
-    "wuerfel128": "core.mastermind",
-    "pipeline": "cube.pipeline"
-  }
-}
+    return {
+        repo: {
+            ice:   config.repo === "goal(ice)",
+            feuer: config.mode === "goal(feuer)"
+        },
+
+        status: config.status,          // zündung / stabil / drift
+        maintenance: config.needsMaintenance, // sli.mode
+
+        pyramide: {
+            out: config.order.pyramide.air64,  // axis.out
+            in:  config.order.pyramide.aiv64   // axis.in
+        },
+
+        wuerfel: config.order.wuerfel128,      // core.mastermind
+        pipeline: config.order.pipeline,       // cube.pipeline
+
+        // PUMPE‑Achsen (bios → bio)
+        natur: {
+            wasser: PUMPE.wasser(81),
+            o2:     PUMPE.o2(81),
+            co2:    PUMPE.co2(81),
+            atom:   PUMPE.atom(81)
+        },
+
+        tag: "PUMPE.map"
+    };
+};
