@@ -1,31 +1,8 @@
-class TimeHW {
+const t = TimeHW.update();
+const PFAD = [3, 9, 81, 27, 3];
 
-    constructor(){
-        this.start = performance.now();
-        this.last = this.start;
-        this.now = this.start;
-        this.delta = 0;
-        this.elapsed = 0;
-    }
+const axis = PFAD[Math.floor((t.elapsed / 1000) % PFAD.length)];
 
-    // Zeit aktualisieren
-    update(){
-        this.now = performance.now();
-        this.delta = this.now - this.last;
-        this.elapsed = this.now - this.start;
-        this.last = this.now;
+const sync = arg.sync(axis);
 
-        return {
-            now: this.now,
-            delta: this.delta,
-            elapsed: this.elapsed
-        };
-    }
-
-    // Zeitfaktor (time / clock)
-    factor(clock){
-        return this.delta / clock;
-    }
-}
-
-window.TimeHW = new TimeHW();
+Pipeline9.useA81(sync);
