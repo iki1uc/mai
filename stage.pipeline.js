@@ -4,26 +4,25 @@ class StagePipeline {
         this.stages = [3, 9, 81, 243, 729];
     }
 
-    // Prüft, ob Stage gültig ist
     isValid(stage){
         return this.stages.includes(stage);
     }
 
-    // Gibt die nächste Stage zurück
     next(stage){
         const index = this.stages.indexOf(stage);
         if(index === -1) throw new Error(`Ungültige Stage: ${stage}`);
-        return this.stages[index + 1] || null;
+
+        // PFAD-Reset: 729 → 3 ↺
+        return this.stages[index + 1] || 3;
     }
 
-    // Gibt die vorherige Stage zurück
     prev(stage){
         const index = this.stages.indexOf(stage);
-        if(index <= 0) return null;
+        if(index <= 0) return 729; // Rückführung
         return this.stages[index - 1];
     }
 
-    // Allgemeine Übergabe zwischen zwei Stages
+    // Übergabe + PUMPE + arg.sync
     transfer(fromStage, data){
         if(!this.isValid(fromStage)){
             throw new Error(`Ungültige Stage: ${fromStage}`);
@@ -31,10 +30,17 @@ class StagePipeline {
 
         const toStage = this.next(fromStage);
 
+        // NATURA + arg.sync + PUMPE
+        const sync = arg.sync(fromStage);
+        const pump = PUMPE.natur(fromStage);
+
         return {
             from: fromStage,
             to: toStage,
-            payload: data
+            payload: data,
+            sync,
+            pump,
+            time: TimeHW.update()
         };
     }
 
@@ -44,10 +50,16 @@ class StagePipeline {
             throw new Error(`Ungültige Stage: ${stage}`);
         }
 
+        const sync = arg.sync(stage);
+        const pump = PUMPE.natur(stage);
+
         return {
             current: stage,
             next: this.next(stage),
-            prev: this.prev(stage)
+            prev: this.prev(stage),
+            sync,
+            pump,
+            time: TimeHW.update()
         };
     }
 }
